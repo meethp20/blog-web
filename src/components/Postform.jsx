@@ -58,33 +58,33 @@ function Postform() {
         setLoading(true);
         setError("");
 
-        if (!formData.title || !formData.content || !formData.featuredImage) {
-            setError("Please fill all required fields and upload a featured image");
+        if (!formData.title || !formData.content) {
+            setError("Title and content are required");
             setLoading(false);
             return;
         }
 
         try {
-            // First upload the image
-            const fileId = await service.uploadFile(formData.featuredImage);
+            let fileId = null;
             
-            if (fileId) {
-                // Then create the post with the file ID
-                const response = await service.createPost({
-                    title: formData.title,
-                    slug: formData.slug,
-                    content: formData.content,
-                    status: formData.status,
-                    featuredImage: fileId,
-                    categoryId: formData.categoryId || undefined,
-                    userId: userData.$id,
-                });
+            // Upload image if provided
+            if (formData.featuredImage) {
+                fileId = await service.uploadFile(formData.featuredImage);
+            }
+            
+            // Create the post with or without image
+            const response = await service.createPost({
+                title: formData.title,
+                slug: formData.slug,
+                content: formData.content,
+                status: formData.status,
+                featuredImage: fileId || undefined,
+                categoryId: formData.categoryId || undefined,
+                UserId: userData.$id,
+            });
 
-                if (response) {
-                    navigate("/all-posts");
-                }
-            } else {
-                throw new Error("Failed to upload image");
+            if (response) {
+                navigate("/all-posts");
             }
         } catch (error) {
             console.error("Error creating post:", error);
@@ -166,7 +166,7 @@ function Postform() {
                             onChange={handleChange}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">Select a category</option>
+                            <option value="" disabled>Select a category</option>
                             {categories.map(category => (
                                 <option key={category.$id} value={category.$id}>
                                     {category.name}
@@ -185,7 +185,7 @@ function Postform() {
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 font-medium mb-2">Featured Image *</label>
+                        <label className="block text-gray-700 font-medium mb-2">Featured Image</label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
                             <input
                                 type="file"

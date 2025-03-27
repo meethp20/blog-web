@@ -19,7 +19,7 @@ class Service {
         }
     }
 
-    async createPost({ title, slug, content, featuredImage, status, userId, categoryId }) {
+    async createPost({ title, slug, content, featuredImage, status, UserId, categoryId }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -30,7 +30,7 @@ class Service {
                     content,
                     featuredImage,
                     status,
-                    userId,
+                    UserId,
                     slug,
                     categoryId
                 }
@@ -41,7 +41,7 @@ class Service {
         }
     }
 
-    async updatePost(postId, { title, content, featuredImage, status, slug, categoryId }) {
+    async updatePost(postId, { title, content, featuredImage, status, slug, categoryId, UserId }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -52,6 +52,7 @@ class Service {
                     content,
                     featuredImage,
                     status,
+                    UserId,
                     slug,
                     categoryId
                 }
